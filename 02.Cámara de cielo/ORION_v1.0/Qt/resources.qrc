@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="img">
+        <file>calib_allsky.ico</file>
+    </qresource>
+</RCC>

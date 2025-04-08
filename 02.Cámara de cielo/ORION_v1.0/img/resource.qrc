@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="img">
+        <file>logo_app-64.png</file>
+        <file>logo_app-120.png</file>
+        <file>logo_app-200.png</file>
+        <file>logo_app.png</file>
+        <file>about.png</file>
+        <file>calib_allsky.ico</file>
+        <file>ico_config.png</file>
+        <file>ico_conv.png</file>
+        <file>ico_help.png</file>
+        <file>ico_load.png</file>
+        <file>ico_prepare.png</file>
+        <file>logo.png</file>
+    </qresource>
+</RCC>
