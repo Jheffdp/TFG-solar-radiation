@@ -7,6 +7,9 @@ import logging
 
 logger=logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+log_dir= f'.\logs'
+if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
 log_filename=os.path.join(f'.\logs\snapshot_{time.strftime("%Y%m%d")}.log')
 handler=logging.FileHandler(log_filename,mode='w+')
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -37,12 +40,12 @@ if __name__ == '__main__':
     ## https://apscheduler.readthedocs.io/en/3.x/modules/triggers/cron.html
     scheduler = BlockingScheduler()
 
-    ## Ejecuta la tarea cada 5 segundos en la franja horaria de 6 a 21:59:55
+    ## Ejecuta la tarea cada 15 segundos en la franja horaria de 12 a 12:59:45
     ## (resto de variables son * por defecto)
     scheduler.add_job(get_imagen,
-                      trigger=CronTrigger(hour='20-21',
+                      trigger=CronTrigger(hour='18-19',
                                           second = '*/15'),
-                      id='task15min')
+                      id='task15sec')
 
     scheduler.start()
     logger.debug('Comienza el programa')
