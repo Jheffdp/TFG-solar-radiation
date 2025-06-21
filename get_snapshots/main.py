@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime, timedelta
 import time
 import os
 from apscheduler.schedulers.background import BlockingScheduler
@@ -7,10 +8,10 @@ import logging
 
 logger=logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-log_dir= f'.\logs'
+log_dir= f'./logs'
 if not os.path.exists(log_dir):
         os.makedirs(log_dir)
-log_filename=os.path.join(f'.\logs\snapshot_{time.strftime("%Y%m%d")}.log')
+log_filename=os.path.join(f'./logs/snapshot_{time.strftime("%Y%m%d")}.log')
 handler=logging.FileHandler(log_filename,mode='w+')
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 handler.setFormatter(formatter)
@@ -18,37 +19,41 @@ logger.addHandler(handler)
 
 def get_imagen():
     try:
+        # Registra hora del sistema
+        now = datetime.now()
+        # Configura sesión
         session = requests.Session()
         session.auth = ("user-a", "qX7cj90H!")
-        timestr_date = time.strftime("%Y%m%d")
-        timestr_datetime = time.strftime("%Y%m%d_%H%M%S")
+        # Obtiene imagen
         response = session.get('http://138.100.103.114/cgi-bin/DownloadLiveImage?')
-        directory = f'.\snapshots\\{timestr_date}'
+        # Da formato a hora para nombrar directorio y fichero
+        timestr_date = now.strftime("%Y%m%d")
+        timestr_datetime = now.strftime("%Y%m%d_%H%M%S")
+        # Emplea un directorio para cada día
+        directory = f'./snapshots/{timestr_date}'
+        # Crea el directorio si no existe
         if not os.path.exists(directory):
             os.makedirs(directory)
-        with open(f'{directory}\\rad_{timestr_datetime}.jpg', 'wb') as file:
+        # Alamacena la imagen    
+        with open(f'{directory}/rad_{timestr_datetime}.jpg', 'wb') as file:
             file.write(response.content)
             logger.info(f'Se añade rad_{timestr_datetime}.jpg')
+    # Gestiona errores        
     except Exception as error:
             logger.error('Se obtuvo el siguiente error: ' + repr(error))
             print('Se obtuvo el siguiente error: ' + repr(error))
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
+## Programa la tarea repetitiva
+## https://apscheduler.readthedocs.io/en/3.x/modules/triggers/cron.html
+scheduler = BlockingScheduler()
 
-    ## Programa la tarea repetitiva
-    ## https://apscheduler.readthedocs.io/en/3.x/modules/triggers/cron.html
-    scheduler = BlockingScheduler()
+## Ejecuta la tarea cada 2 minutos en la franja horaria de 22 a 23:58:00
+## (resto de variables son * por defecto)
+scheduler.add_job(get_imagen,
+                  trigger=CronTrigger(hour='22-23',
+                                      second = '*/15'),
+                  id='task2min')
 
-    ## Ejecuta la tarea cada 15 segundos en la franja horaria de 12 a 12:59:45
-    ## (resto de variables son * por defecto)
-    scheduler.add_job(get_imagen,
-                      trigger=CronTrigger(hour='18-19',
-                                          second = '*/15'),
-                      id='task15sec')
-
-    scheduler.start()
-    logger.debug('Comienza el programa')
-    logger.info('Procesando con normalidad')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+scheduler.start()
+logger.debug('Comienza el programa')
+logger.info('Procesando con normalidad')
