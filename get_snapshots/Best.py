@@ -11,7 +11,7 @@ logger.setLevel(logging.DEBUG)
 log_dir= f'./logs'
 if not os.path.exists(log_dir):
         os.makedirs(log_dir)
-log_filename=os.path.join(f'./logs/snapshot_{time.strftime("%Y%m%d")}.log')
+log_filename=os.path.join(f'./logs/snapshot_best_{time.strftime("%Y%m%d")}.log')
 handler=logging.FileHandler(log_filename,mode='w+')
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 handler.setFormatter(formatter)
@@ -25,12 +25,12 @@ def get_imagen():
         session = requests.Session()
         session.auth = ("user-a", "qX7cj90H!")
         # Obtiene imagen
-        response = session.get('http://138.100.103.114/cgi-bin/DownloadLiveImage?')
+        response = session.get('http://138.100.103.114/cgi-bin/DownloadBestImage?')
         # Da formato a hora para nombrar directorio y fichero
         timestr_date = now.strftime("%Y%m%d")
         timestr_datetime = now.strftime("%Y%m%d_%H%M%S")
         # Emplea un directorio para cada día
-        directory = f'./snapshots/{timestr_date}'
+        directory = f'./snapshots_best/{timestr_date}'
         # Crea el directorio si no existe
         if not os.path.exists(directory):
             os.makedirs(directory)
@@ -50,7 +50,7 @@ scheduler = BlockingScheduler()
 ## Ejecuta la tarea cada 2 minutos en la franja horaria de 22 a 23:58:00
 ## (resto de variables son * por defecto)
 scheduler.add_job(get_imagen,
-                  trigger=CronTrigger(hour='22-23',
+                  trigger=CronTrigger(hour='17-18',
                                       second = '*/15'),
                   id='task2min')
 
